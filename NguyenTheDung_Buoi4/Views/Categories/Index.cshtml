@@ -1,0 +1,40 @@
+﻿@model IEnumerable<NguyenTheDung_Buoi4.Models.Category>
+
+@{
+    ViewData["Title"] = "Category List";
+}
+
+<h2 class="mb-3">Categories</h2>
+
+<a asp-action="Add" class="btn btn-success mb-3">+ Add New Category</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>
+                    <a asp-action="Display" asp-route-id="@item.Id" class="btn btn-sm btn-primary">View</a>
+                    <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@foreach (var category in Model)
+{
+    <li>
+        <a asp-controller="Product" asp-action="ByCategory" asp-route-categoryId="@category.Id">
+            @category.Name
+        </a>
+    </li>
+}
