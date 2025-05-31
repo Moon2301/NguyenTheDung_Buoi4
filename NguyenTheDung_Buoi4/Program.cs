@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NguyenTheDung_Buoi4.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using NguyenTheDung_Buoi4.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,11 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyDb")));
 
+
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
- .AddDefaultTokenProviders()
- .AddEntityFrameworkStores<MyDbContext>();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddDefaultTokenProviders()
+    .AddDefaultUI()
+    .AddEntityFrameworkStores<MyDbContext>();
+
+
 builder.Services.AddRazorPages();
 
 builder.Services.AddScoped<IProductRepository, EFProductRepository>();
@@ -33,6 +38,7 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.MapRazorPages();
 
 app.MapControllerRoute(
     name: "default",

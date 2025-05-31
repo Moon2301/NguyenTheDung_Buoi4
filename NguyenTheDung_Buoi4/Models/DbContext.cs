@@ -2,7 +2,7 @@
 using NguyenTheDung_Buoi4.Models;
 using Microsoft.EntityFrameworkCore;
 
-public class MyDbContext : IdentityDbContext
+public class MyDbContext : IdentityDbContext<ApplicationUser>
 {
     public MyDbContext(DbContextOptions<MyDbContext> options) : base(options) { }
     public DbSet<Product> Products { get; set; }
