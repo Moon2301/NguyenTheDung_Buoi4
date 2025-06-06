@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using NguyenTheDung_Buoi4.Models;
 using NguyenTheDung_Buoi4.Repositories;
 
-namespace NguyenTheDung_Buoi4.Controllers { 
-
+namespace NguyenTheDung_Buoi4.Areas.Admin.Controllers
+{
+    
+    [Area("Admin")]
+    [Authorize]
     public class CategoriesController : Controller
     {
         private readonly IProductRepository _productRepository;
@@ -77,12 +80,13 @@ namespace NguyenTheDung_Buoi4.Controllers {
         }
 
         [HttpPost, ActionName("DeleteConfirmed")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);
             if (category != null)
             {
-                _categoryRepository.DeleteAsync(id);
+                await _categoryRepository.DeleteAsync(id); // ✅ cần await
             }
             return RedirectToAction(nameof(Index));
         }

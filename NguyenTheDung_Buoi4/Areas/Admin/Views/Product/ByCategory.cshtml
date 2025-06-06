@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Sản phẩm theo danh mục";
     var category = ViewBag.Category as Category;
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Sản phẩm trong danh mục: @category?.Name</h2>

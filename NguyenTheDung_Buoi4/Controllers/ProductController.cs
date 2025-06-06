@@ -1,28 +1,39 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using NguyenTheDung_Buoi4.Repositories;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using NguyenTheDung_Buoi4.Models;
+using NguyenTheDung_Buoi4.Repositories;
+
 namespace NguyenTheDung_Buoi4.Controllers
 {
+    [AllowAnonymous]
     public class ProductController : Controller
     {
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
         public ProductController(IProductRepository productRepository,
-       ICategoryRepository categoryRepository)
+        ICategoryRepository categoryRepository)
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
         }
-        // Hiển thị danh sách sản phẩm
+
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var products = await _productRepository.GetAllAsync();
             var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
-            return View(products);
+            return View("Index", products); 
         }
+
         // Hiển thị form thêm sản phẩm mới
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Company + "," + SD.Role_Employee)]
         public async Task<IActionResult> Add()
         {
             var categories = await _categoryRepository.GetAllAsync();
@@ -31,8 +42,9 @@ namespace NguyenTheDung_Buoi4.Controllers
         }
         // Xử lý thêm sản phẩm mới
         [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Company + "," + SD.Role_Employee)]
         public async Task<IActionResult> Add(Product product, IFormFile
-       imageUrl)
+        imageUrl)
         {
             if (ModelState.IsValid)
             {
@@ -63,6 +75,7 @@ namespace NguyenTheDung_Buoi4.Controllers
         //Nhớ tạo folder images trong wwwroot
 
         // Hiển thị thông tin chi tiết sản phẩm
+        [AllowAnonymous]
         public async Task<IActionResult> Display(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
@@ -72,80 +85,11 @@ namespace NguyenTheDung_Buoi4.Controllers
             }
             return View(product);
         }
-        // Hiển thị form cập nhật sản phẩm
-        public async Task<IActionResult> Update(int id)
-        {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            var categories = await _categoryRepository.GetAllAsync();
-            ViewBag.Categories = new SelectList(categories, "Id", "Name",
-           product.CategoryId);
-            return View(product);
-        }
-        // Xử lý cập nhật sản phẩm
-        [HttpPost]
-        public async Task<IActionResult> Update(int id, Product product,
-       IFormFile imageUrl)
-        {
-            ModelState.Remove("ImageUrl"); // Loại bỏ xác thực ModelState cho ImageUrl
-            if (id != product.Id)
-            {
-                return NotFound();
-            }
-            if (ModelState.IsValid)
-            {
-                var existingProduct = await
-               _productRepository.GetByIdAsync(id); // Giả định có phương thức GetByIdAsync
-                                                    // Giữ nguyên thông tin hình ảnh nếu không có hình mới được  tải lên
-                if (imageUrl == null)
-                {
-                    product.ImageUrl = existingProduct.ImageUrl;
-                }
-                else
-                {
-                    // Lưu hình ảnh mới
-                    product.ImageUrl = await SaveImage(imageUrl);
-                }
-
-                // Cập nhật các thông tin khác của sản phẩm
-                existingProduct.Name = product.Name;
-                existingProduct.Price = product.Price;
-                existingProduct.Description = product.Description;
-                existingProduct.CategoryId = product.CategoryId;
-                existingProduct.ImageUrl = product.ImageUrl;
-                await _productRepository.UpdateAsync(existingProduct);
-
-                return RedirectToAction(nameof(Index));
-            }
-            var categories = await _categoryRepository.GetAllAsync();
-            ViewBag.Categories = new SelectList(categories, "Id", "Name");
-            return View(product);
-        }
-        // Hiển thị form xác nhận xóa sản phẩm
-        public async Task<IActionResult> Delete(int id)
-        {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return View(product);
-        }
-        // Xử lý xóa sản phẩm
-        [HttpPost, ActionName("DeleteConfirmed")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            await _productRepository.DeleteAsync(id);
-            return RedirectToAction(nameof(Index));
-        }
-
         // Hiển thị sản phẩm theo danh mục
-        public async Task<IActionResult> ByCategory(int? categoryId)
+        public async Task<IActionResult> ByCategory(int? categoryId, string keyword)
         {
             IEnumerable<Product> products;
+
             if (categoryId.HasValue)
             {
                 products = await _productRepository.GetByCategoryAsync(categoryId.Value);
@@ -155,13 +99,18 @@ namespace NguyenTheDung_Buoi4.Controllers
                 products = await _productRepository.GetAllAsync();
             }
 
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                products = products.Where(p => p.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+            }
+
             var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             ViewBag.SelectedCategoryId = categoryId;
+            ViewBag.SearchKeyword = keyword;
 
-            return View("Index", products); // Tái sử dụng view Index
+            return View("Index", products);
         }
+
     }
-
-
 }

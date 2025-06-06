@@ -2,9 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using NguyenTheDung_Buoi4.Models;
 using System.Diagnostics;
 
-namespace NguyenTheDung_Buoi4.Areas.Controllers
+namespace NguyenTheDung_Buoi4.Controllers
 {
-    [Area("Admin")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

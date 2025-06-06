@@ -1,5 +1,5 @@
-﻿using NguyenTheDung_Buoi4.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using NguyenTheDung_Buoi4.Models;
 
 namespace NguyenTheDung_Buoi4.Repositories
 {

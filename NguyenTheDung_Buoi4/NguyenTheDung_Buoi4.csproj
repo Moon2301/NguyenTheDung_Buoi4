@@ -20,8 +20,54 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\" />
     <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Areas\Admin\Views\Product\Index.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Areas\Admin\Views\Product\Update.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Product\Display.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Areas\Admin\Views\Product\Add.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Areas\Admin\Views\Product\Add.cshtml" />
+    <_ContentIncludedByDefault Remove="Areas\Admin\Views\Product\ByCategory.cshtml" />
+    <_ContentIncludedByDefault Remove="Areas\Admin\Views\Product\Delete.cshtml" />
+    <_ContentIncludedByDefault Remove="Areas\Admin\Views\Product\Display.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Product\ByCategory.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Areas\Admin\Views\Product\ByCategory.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Areas\Admin\Views\Product\Delete.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Areas\Admin\Views\Product\Display.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Product\ByCategory.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Product\Index.cshtml" />
   </ItemGroup>
 
 </Project>

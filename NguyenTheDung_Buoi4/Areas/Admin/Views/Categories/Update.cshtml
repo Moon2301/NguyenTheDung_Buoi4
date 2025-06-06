@@ -1,15 +1,22 @@
-﻿@model NguyenTheDung_Buoi4.Models.Category
+﻿@model Category
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
 
 <h2>Edit Category</h2>
 
-<form asp-action="Update" method="post">
+<form asp-action="Update" method="post" asp-controller="Categories" asp-area="Admin">
+    @Html.AntiForgeryToken()
+
     <input type="hidden" asp-for="Id" />
+
     <div class="mb-3">
         <label asp-for="Name" class="form-label"></label>
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
+
     <button type="submit" class="btn btn-warning">Update</button>
     <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
- 
 </form>

@@ -110,18 +110,32 @@ namespace NguyenTheDung_Buoi4.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+
+                    // Tìm user và role
+                    var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+                    var roles = await _signInManager.UserManager.GetRolesAsync(user);
+
+                    // Redirect theo role
+                    if (roles.Contains("Admin") || roles.Contains("Staff"))
+                    {
+                        return LocalRedirect(Url.Content("~/Admin/Home/Index"));
+                    }
+                    else
+                    {
+                        return LocalRedirect(Url.Content("~/")); 
+                    }
                 }
+
                 if (result.RequiresTwoFactor)
                 {
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
                 }
+
                 if (result.IsLockedOut)
                 {
                     _logger.LogWarning("User account locked out.");
@@ -134,8 +148,9 @@ namespace NguyenTheDung_Buoi4.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            // Nếu tới đây là fail
             return Page();
         }
+
     }
 }

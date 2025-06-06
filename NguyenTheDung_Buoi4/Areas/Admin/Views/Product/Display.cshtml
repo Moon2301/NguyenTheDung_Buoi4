@@ -1,0 +1,39 @@
+﻿@model NguyenTheDung_Buoi4.Models.Product
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title text-primary">@Model.Name</h2>
+            <h5 class="text-success">Price: @Model.Price.ToString("N0") ₫</h5>
+            <p class="card-text">@Model.Description</p>
+
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <div class="mb-4">
+                    <h5>Main Image</h5>
+                    <img src="@Model.ImageUrl" alt="Product Image" class="img-fluid rounded shadow-sm" style="max-width: 300px;" />
+                </div>
+            }
+
+            @if (Model.Images != null && Model.Images.Any())
+            {
+                <h5>Gallery</h5>
+                <div class="row g-2">
+                    @foreach (var img in Model.Images)
+                    {
+                        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                            <img src="@img.Url" alt="Gallery Image" class="img-thumbnail" style="width: 100%; height: 120px; object-fit: cover;" />
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="mt-4">
+                <a asp-action="Index" class="btn btn-secondary">← Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>

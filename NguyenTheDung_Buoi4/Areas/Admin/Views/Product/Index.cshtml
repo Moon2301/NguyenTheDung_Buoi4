@@ -1,0 +1,72 @@
+﻿@model IEnumerable<NguyenTheDung_Buoi4.Models.Product>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Product List";
+    var categoryList = ViewBag.Categories as SelectList;
+    var selectedCategoryId = ViewBag.SelectedCategoryId as int?;
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="text-center mb-4">Product List</h2>
+<form asp-action="ByCategory" method="get" class="row mb-4 justify-content-center">
+    <div class="col-md-4">
+        <select name="categoryId" class="form-select" onchange="this.form.submit()">
+            <option value="">-- Filter by Category --</option>
+            @foreach (var item in categoryList)
+            {
+                if (item.Value == selectedCategoryId?.ToString())
+                {
+                    <option value="@item.Value" selected>@item.Text</option>
+                }
+                else
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            }
+
+        </select>
+    </div>
+</form>
+
+
+<table class="table table-striped table-bordered align-middle text-center">
+    <thead class="table-dark">
+        <tr>
+            <th scope="col">Image</th>
+            <th scope="col">Name</th>
+            <th scope="col">Price (₫)</th>
+            <th scope="col">Description</th>
+            <th scope="col">Category</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(product.ImageUrl))
+                    {
+                        <img src="@product.ImageUrl" alt="Product Image" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;" />
+                    }
+                </td>
+                <td>@product.Name</td>
+                <td>@product.Price.ToString("N0")</td>
+                <td class="text-truncate" style="max-width: 200px;">@product.Description</td>
+                <td>@product.Category?.Name</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a asp-action="Display" asp-route-id="@product.Id" class="btn btn-outline-primary btn-sm">View</a>
+                        <a asp-action="Update" asp-route-id="@product.Id" class="btn btn-outline-warning btn-sm">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-between mt-4">
+    <a asp-action="Add" class="btn btn-success mb-3">+ Add New Product</a>
+    <a asp-action="Index" class="btn btn-secondary mb-3">Back to List</a>
+</div>

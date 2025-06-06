@@ -1,10 +1,15 @@
-﻿@model NguyenTheDung_Buoi4.Models.Category
+﻿@model Category
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
 
 <h2 class="text-danger">Delete Category</h2>
 
 <p>Are you sure you want to delete the category <strong>@Model.Name</strong>?</p>
 
-<form asp-action="DeleteConfirmed" method="post">
+<form asp-action="DeleteConfirmed" asp-controller="Categories" method="post" asp-area="Admin">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
     <button type="submit" class="btn btn-danger">Yes, Delete</button>
     <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
