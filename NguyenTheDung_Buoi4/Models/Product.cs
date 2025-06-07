@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace NguyenTheDung_Buoi4.Models
 {
@@ -22,4 +23,51 @@ namespace NguyenTheDung_Buoi4.Models
         public int ProductId { get; set; }
         public Product? Product { get; set; }
     }
-}
+
+    public class CartItem
+    {
+        public int ProductId { get; set; }
+        public string Name { get; set; }
+        public string? ImageUrl { get; set; }
+        public decimal Price { get; set; }
+        public int Quantity { get; set; }
+    }
+
+    public static class SessionExtensions
+    {
+        public static void Set<T>(this ISession session, string key, T value)
+        {
+            session.SetString(key, JsonSerializer.Serialize(value));
+        }
+
+        public static T? Get<T>(this ISession session, string key)
+        {
+            var data = session.GetString(key);
+            return data == null ? default : JsonSerializer.Deserialize<T>(data);
+        }
+    }
+
+    public class ShoppingCart
+    {
+        public List<CartItem> Items { get; set; } = new
+       List<CartItem>();
+        public void AddItem(CartItem item)
+        {
+            var existingItem = Items.FirstOrDefault(i => i.ProductId ==
+           item.ProductId);
+            if (existingItem != null)
+            {
+                existingItem.Quantity += item.Quantity;
+            }
+            else
+            {
+                Items.Add(item);
+            }
+        }
+        public void RemoveItem(int productId)
+        {
+            Items.RemoveAll(i => i.ProductId == productId);
+        }
+
+    }
+ }

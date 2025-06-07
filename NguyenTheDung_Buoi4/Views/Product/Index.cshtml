@@ -2,74 +2,117 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
-    ViewData["Title"] = "Product List";
+    ViewData["Title"] = "Book List";
     var categoryList = ViewBag.Categories as SelectList;
     var selectedCategoryId = ViewBag.SelectedCategoryId as int?;
     var searchKeyword = ViewBag.SearchKeyword as string;
 }
 
-<h2 class="text-center mb-4">Product List</h2>
 
-<!-- Filter Box -->
-<div class="card mb-4 shadow-sm">
-    <div class="card-body">
-        <form asp-action="ByCategory" method="get" class="row g-3 align-items-end">
-            <div class="col-md-4">
-                <label class="form-label">Category</label>
-                <select name="categoryId" class="form-select">
-                    <option value="">-- All Categories --</option>
-                    @foreach (var item in categoryList)
-                    {
-                        <option value="@item.Value" selected="@(item.Value == selectedCategoryId?.ToString())">
-                            @item.Text
-                        </option>
-                    }
-                </select>
+<h2 class="mb-4 text-center" style="font-family: 'Georgia', serif;">Book Collection</h2>
+
+<div class="row">
+    <!-- 🔍 FILTER SIDEBAR -->
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light border-bottom text-center fw-bold">
+                📚 Filter Books
             </div>
-            <div class="col-md-5">
-                <label class="form-label">Product Name</label>
-                <input type="text" name="keyword" value="@searchKeyword" class="form-control" placeholder="Enter product name..." />
+            <div class="card-body">
+                <form asp-action="ByCategory" method="get">
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select name="categoryId" class="form-select">
+                            <option value="">-- All Categories --</option>
+                            @foreach (var item in categoryList)
+                            {
+                                <option value="@item.Value" selected="@(item.Value == selectedCategoryId?.ToString())">
+                                    @item.Text
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Book Title</label>
+                        <input type="text" name="keyword" class="form-control" placeholder="Enter book title..." value="@searchKeyword" />
+                    </div>
+                    <button type="submit" class="btn btn-outline-dark w-100">Apply Filter</button>
+                </form>
             </div>
-            <div class="col-md-3 d-grid">
-                <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </div>
+
+    <!-- 🛍️ PRODUCT LIST -->
+    <div class="col-md-9">
+        @if (Model != null && Model.Any())
+        {
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+                @foreach (var product in Model)
+                {
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="position-relative" style="height: 320px; overflow: hidden;">
+                                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                {
+                                    <img src="@product.ImageUrl" alt="Book Cover" class="w-100 h-100" style="object-fit: cover;">
+                                }
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title mb-2 text-truncate" title="@product.Name">@product.Name</h5>
+                                <p class="text-primary fw-semibold mb-1">₫@product.Price.ToString("N0")</p>
+                                <p class="text-muted small mb-2 text-truncate" title="@product.Description">@product.Description</p>
+
+                                @if (product.Category != null)
+                                {
+                                    <span class="badge bg-secondary mb-2">@product.Category.Name</span>
+                                }
+
+                                <button class="btn btn-sm btn-dark add-to-cart-btn" data-id="@product.Id">Add to Cart</button>
+
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-        </form>
+        }
+        else
+        {
+            <div class="alert alert-info">No books found.</div>
+        }
     </div>
 </div>
 
-<!-- Product List -->
-@if (Model != null && Model.Any())
-{
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-        @foreach (var product in Model)
-        {
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    @if (!string.IsNullOrEmpty(product.ImageUrl))
-                    {
-                        <img src="@product.ImageUrl" class="card-img-top" style="height: 180px; object-fit: cover;" alt="Product Image">
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).on("click", ".add-to-cart-btn", function (e) {
+            e.preventDefault();
+
+            var $btn = $(this);
+            var productId = $btn.data("id");
+
+            $.ajax({
+                url: '/Cart/AddToCart/' + productId,
+                method: 'POST',
+                success: function () {
+                    $btn
+                        .removeClass("btn-dark")
+                        .addClass("btn-success")
+                        .text("✓ Added")
+                        .prop("disabled", true);
+
+                    // Tăng badge cart
+                    let $cartCount = $("#cart-count");
+                    if ($cartCount.length) {
+                        let current = parseInt($cartCount.text()) || 0;
+                        $cartCount.text(current + 1);
                     }
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text text-muted mb-1"><strong>₫</strong> @product.Price.ToString("N0")</p>
-                        <p class="card-text text-truncate" title="@product.Description">@product.Description</p>
-                        @if (product.Category != null)
-                        {
-                            <p class="card-text"><small class="text-secondary">@product.Category.Name</small></p>
-                        }
-                        <div class="mt-auto d-flex justify-content-between">
-                            <a asp-action="Display" asp-route-id="@product.Id" class="btn btn-sm btn-outline-primary">View</a>
-                            <form asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id" method="post" style="display:inline;">
-                                <button type="submit" class="btn btn-sm btn-success">Add to Cart</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-}
-else
-{
-    <div class="alert alert-info">No products found.</div>
+                },
+                error: function () {
+                    alert("Error adding to cart.");
+                }
+            });
+        });
+    </script>
 }

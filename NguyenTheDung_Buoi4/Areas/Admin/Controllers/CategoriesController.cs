@@ -7,7 +7,7 @@ namespace NguyenTheDung_Buoi4.Areas.Admin.Controllers
 {
     
     [Area("Admin")]
-    [Authorize]
+    [Authorize(Roles = "Admin,Employee")]
     public class CategoriesController : Controller
     {
         private readonly IProductRepository _productRepository;

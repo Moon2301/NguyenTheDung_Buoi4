@@ -171,5 +171,6 @@ namespace NguyenTheDung_Buoi4.Areas.Admin.Controllers
 
             return View("Index", products); // Tái sử dụng view Index
         }
+
     }
 }

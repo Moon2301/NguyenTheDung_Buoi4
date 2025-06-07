@@ -1,0 +1,25 @@
+﻿@model Order
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<h2>🧾 Checkout</h2>
+<form asp-action="Checkout" method="post">
+    <div class="mb-3">
+        <label asp-for="ShippingAddress" class="form-label">Shipping Address</label>
+        <input asp-for="ShippingAddress" class="form-control" />
+        <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Notes" class="form-label">Notes</label>
+        <textarea asp-for="Notes" class="form-control"></textarea>
+        <span asp-validation-for="Notes" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Place Order</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

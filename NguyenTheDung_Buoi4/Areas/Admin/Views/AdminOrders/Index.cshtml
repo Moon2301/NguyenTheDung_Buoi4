@@ -1,0 +1,42 @@
+﻿@model IEnumerable<NguyenTheDung_Buoi4.Models.Order>
+
+@{
+    ViewData["Title"] = "Manage Orders";
+}
+
+<h2 class="mb-4">📦 Order Management</h2>
+
+<table class="table table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Order Date</th>
+            <th>Total Price</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>#@order.Id</td>
+                <td>@order.ApplicationUser.FullName</td>
+                <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>₫@order.TotalPrice.ToString("N0")</td>
+                <td>
+                    <span class="badge bg-info">@order.Status</span>
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-primary">View</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No orders found.</div>
+}
